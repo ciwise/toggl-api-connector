@@ -53,4 +53,9 @@ public class ConnectorConfig {
         return this.reply;
     }
 
+	public String getSuccessMsg() {
+		final String msg = "SUCCESS";
+		return msg;
+	}
+
 }

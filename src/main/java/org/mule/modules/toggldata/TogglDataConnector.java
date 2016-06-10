@@ -26,6 +26,15 @@ public class TogglDataConnector {
         return config.getGreeting() + " " + friend + ". " + config.getReply();
     }
 
+    public String extractTransformLoad(final String projectId) {
+    	if (projectId == null || projectId.equals("")) {
+    		// do all projects
+    	} else {
+    		// do specific project
+    	}
+    	return config.getSuccessMsg() + ":" + projectId + " was loaded into remote persistent database.";
+    }
+    
     public ConnectorConfig getConfig() {
         return config;
     }
