@@ -19,6 +19,7 @@
         <licensePath>LICENSE.md</licensePath>
         <devkit.studio.package.skip>false</devkit.studio.package.skip>
     </properties>
+    
     <repositories>
         <repository>
             <id>mulesoft-releases</id>
@@ -27,17 +28,12 @@
             <layout>default</layout>
         </repository>
     </repositories>
-<dependencies>
+    
+	<dependencies>
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-http</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
-    <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>toggl-data-connector</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 </project>
