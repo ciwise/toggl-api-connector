@@ -1,5 +1,8 @@
 # TogglAPI Anypoint Connector
 
+[![Build Status](https://api.travis-ci.org/ciwise/toggl-api-connector.png?branch=master)](https://travis-ci.org/ciwise/toggl-api-connector)
+
+
 [Connector description including destination service or application with]
 
 # Mule supported versions
