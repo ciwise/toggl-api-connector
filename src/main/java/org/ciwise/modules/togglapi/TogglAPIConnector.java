@@ -42,7 +42,7 @@ public class TogglAPIConnector {
     	String msg = null;
 
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
-        	if (TogglDataAPIHandler.getInstance().tagProcessedRecords()) {
+        	if (TogglDataAPIHandler.getInstance().tagProcessedRecords(user, userPass, projectId)) {
         		msg = config.getSuccessPrefix() + " Process tagging is complete.";
         	} else {
         		msg = config.getFailurePrefix() + " Process tagging failed.";

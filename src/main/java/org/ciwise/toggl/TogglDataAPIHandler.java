@@ -3,10 +3,12 @@ package org.ciwise.toggl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,6 +50,11 @@ public class TogglDataAPIHandler extends BaseObject {
 	public static void main(String[] args) {
 		if (getInstance().authenticate("david@ciwise.com:RoS0706DLW#")) {
 			System.out.println(getInstance().getDetailReportDataForProjectNoTags("17654629","david@ciwise.com"));
+			String tmp = getInstance().delimitedTimeEntryIds(getInstance().getDetailReportDataForProjectNoTags("17654629","david@ciwise.com"));
+			System.out.println("Time entry ids: " + tmp);
+			if (getInstance().tagProcessedRecords("david@ciwise.com", "david@ciwise.com:RoS0706DLW#", "17654629")) {
+				System.out.println("Go check Toggl and see if the records were tagged.");
+			}
 		}
 	}
 	
@@ -119,10 +126,56 @@ public class TogglDataAPIHandler extends BaseObject {
 		return getDataArrayFromJSON(json);
 	}
 	
-	public boolean tagProcessedRecords() { // 1498014 wid
-		// PUT https://www.toggl.com/api/v8/time_entries/{time_entry_id}
-		
+	public boolean tagProcessedRecords(final String user, final String userpass, final String projectId) { // 1498014 wid
 		boolean retVal = false;
+		/*
+		 
+		curl -v -u 1971800d4d82861d8f2c1651fea4d212:api_token \
+	    -H "Content-Type: application/json" \
+	    -d '{"time_entry":{"tags":["billed","productive"], "tag_action": "add"}}' \
+	    -X PUT https://www.toggl.com/api/v8/time_entries/436694100,436694101
+	    
+	    */
+		// process these records e.g. Time entry ids: 396544838,396542215,396541878,396540897,396540567,396517668,396517141,396516962
+		if (getInstance().authenticate(userpass)) {
+			String jsonData = getInstance().getDetailReportDataForProjectNoTags(projectId,user);
+			String ids = getInstance().delimitedTimeEntryIds(jsonData);
+			System.out.println("Time entry ids: " + ids);
+			
+			// build and send PUT request
+			Random random = new Random();
+	        URL url;
+			try {
+				url = new URL("https://www.toggl.com/api/v8/time_entries/" + ids);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("PUT");
+				conn.setDoOutput(true);
+				conn.setRequestProperty("Content-Type", "application/json");
+				conn.setRequestProperty("Accept", "application/json");
+			    // b470ef7cfd23ef21c2e30222aad6b937:api_token
+				String authtoken = TogglDataAPIHandler.getInstance().getApiToken() + ":api_token";
+				String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(authtoken.getBytes());
+				conn.setRequestProperty("Authorization", basicAuth);
+				
+				OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream());
+				osw.write(String.format("{\"time_entry\":{\"tags\":[\"processed\"], \"tag_action\": \"add\"}}", random.nextInt(30), random.nextInt(20)));
+				osw.flush();
+				osw.close();
+				
+				if (conn.getResponseCode() == 200) {
+					retVal = true;
+				}
+
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+		}
+
 		return retVal;
 	}
 	
@@ -178,5 +231,21 @@ public class TogglDataAPIHandler extends BaseObject {
         
 		return newJSONArray.toString();
 	}
-	
+
+	private String delimitedTimeEntryIds(final String json) {
+		String retString = "";
+		JSONArray jsonArray = new JSONArray(json);
+		for(int i = 0; i < jsonArray.length(); i++)
+		{
+			JSONObject object = jsonArray.getJSONObject(i);
+			Integer id = (Integer) object.get("id");
+			String sId = id.toString();
+			if (i == 0) {
+				retString = retString + sId;
+			} else {
+				retString = retString + "," + sId;
+			}
+		}
+		return retString;
+	}
 }
