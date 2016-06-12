@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.mule.modules</groupId>
-    <artifactId>toggl-data-connector</artifactId>
+    <groupId>org.ciwise.modules</groupId>
+    <artifactId>toggl-api-connector</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>mule-module</packaging>
-    <name>Mule TogglData Anypoint Connector</name>
+    <name>Mule TogglAPI Anypoint Connector</name>
 
     <parent>
         <groupId>org.mule.tools.devkit</groupId>
@@ -19,7 +19,15 @@
         <licensePath>LICENSE.md</licensePath>
         <devkit.studio.package.skip>false</devkit.studio.package.skip>
     </properties>
-    
+
+    <dependencies>
+    		<dependency>
+    		<groupId>com.googlecode.json-simple</groupId>
+    		<artifactId>json-simple</artifactId>
+    		<version>1.1.1</version>
+		</dependency>
+    </dependencies>
+
     <repositories>
         <repository>
             <id>mulesoft-releases</id>
@@ -28,13 +36,4 @@
             <layout>default</layout>
         </repository>
     </repositories>
-    
-	<dependencies>
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-http</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
 </project>
