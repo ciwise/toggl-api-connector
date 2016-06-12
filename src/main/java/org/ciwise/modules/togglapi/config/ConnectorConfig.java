@@ -53,9 +53,13 @@ public class ConnectorConfig {
         return this.reply;
     }
 
-	public String getSuccessMsg() {
-		final String msg = "SUCCESS";
+	public String getSuccessPrefix() {
+		final String msg = "SUCCESS:";
 		return msg;
 	}
 
+	public String getFailurePrefix() {
+		final String msg = "ERROR:";
+		return msg;
+	}
 }

@@ -37,6 +37,22 @@ public class TogglAPIConnector {
     	return json;
     }
     
+    @Processor(friendlyName="Tag Unprocessed Time Records")
+    public String addProcessTags(final String user, final String userPass, final String projectId) {
+    	String msg = null;
+
+    	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
+        	if (TogglDataAPIHandler.getInstance().tagProcessedRecords()) {
+        		msg = config.getSuccessPrefix() + " Process tagging is complete.";
+        	} else {
+        		msg = config.getFailurePrefix() + " Process tagging failed.";
+        	}
+    	} else {
+    		msg = config.getFailurePrefix() + " Authentication failure.";
+    	}
+    	return msg;
+    }
+    
     public ConnectorConfig getConfig() {
         return config;
     }

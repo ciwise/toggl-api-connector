@@ -20,6 +20,7 @@ public class TogglDataAPIHandler extends BaseObject {
 	private static final String GET_DETAIL_REPORT_URL = "https://toggl.com/reports/api/v2/details"; // https://toggl.com/reports/api/v2/details?workspace_id=1498014&project_ids=17654629&user_agent=david@ciwise.com
 	private static final String GET_WEEKLY_REPORT_URL = "https://toggl.com/reports/api/v2/weekly";
 	private static final String GET_SUMMARY_REPORT_URL = "https://toggl.com/reports/api/v2/summary";
+	private static final String TAGS_URL = "https://www.toggl.com/api/v8/tags";
 	
 	/**
 	 * No public default constructor.
@@ -116,6 +117,13 @@ public class TogglDataAPIHandler extends BaseObject {
 			e.printStackTrace();
 		}
 		return getDataArrayFromJSON(json);
+	}
+	
+	public boolean tagProcessedRecords() { // 1498014 wid
+		// PUT https://www.toggl.com/api/v8/time_entries/{time_entry_id}
+		
+		boolean retVal = false;
+		return retVal;
 	}
 	
 	@Override
