@@ -23,7 +23,6 @@ import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 public class TogglDataAPIHandler extends BaseObject {
 
 	/**
@@ -35,7 +34,7 @@ public class TogglDataAPIHandler extends BaseObject {
 	
 	private static final String AUTH_URL = "https://www.toggl.com/api/v8/me";
 	private static final String GET_DETAIL_REPORT_URL = "https://toggl.com/reports/api/v2/details"; 
-	
+	private static final String WORKSPACES_URL = "https://www.toggl.com/api/v8/workspaces";
 	/**
 	 * No public default constructor.
 	 */
@@ -89,7 +88,7 @@ public class TogglDataAPIHandler extends BaseObject {
 		return retVal;
 	}
 
-	public String getDetailReportDataForProjectNoTags(final String workspaceId, final String projectId, final String user) { // 17654629
+	public String getDetailReportDataForProjectNoTags(String workspaceId, String projectId, String user) { // 17654629
 		String json = null;
 		StringBuilder result = new StringBuilder();
 	      URL url;
@@ -121,12 +120,12 @@ public class TogglDataAPIHandler extends BaseObject {
 		return getDataArrayFromJSON(json);
 	}
 	
-	public boolean tagProcessedRecords(final String user, final String userpass, final String workspaceId, final String projectId) {
+	public boolean tagProcessedRecords(String user, String userpass, String workspaceId, String projectId) {
 
 		boolean retVal = false;
 		
 		if (getInstance().authenticate(userpass)) {
-			String jsonData = getInstance().getDetailReportDataForProjectNoTags(workspaceId,projectId,user);
+			String jsonData = getInstance().getDetailReportDataForProjectNoTags(workspaceId, projectId, user);
 			String ids = getInstance().delimitedTimeEntryIds(jsonData);
 			System.out.println("Time entry ids: " + ids);
 			
@@ -161,6 +160,59 @@ public class TogglDataAPIHandler extends BaseObject {
 		}
 
 		return retVal;
+	}
+	
+	public String getProjectId(final String projectName, final String workspaceId) {
+		String projectId = null;
+			JSONArray jsonArray = new JSONArray(getProjectsByWorkspaceId(workspaceId));
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				JSONObject object = jsonArray.getJSONObject(i);
+				String name = object.getString("name");
+				if (name.equals(projectName)) {
+					Integer id = (Integer) object.get("id");
+					projectId = id.toString();
+				}
+			}
+		return projectId;
+	}
+	
+	/**
+	 * This method returns a JSON array of projects using the Toggl workspaceId
+	 * @param workspaceId the string version of the workspaceId integer
+	 * @return JSON array of projects
+	 */
+	private String getProjectsByWorkspaceId(String workspaceId) {
+		String jsonStr = null;
+		StringBuilder result = new StringBuilder();
+	      URL url;
+	      String loaded = WORKSPACES_URL + "/" + workspaceId + "/projects";
+	      
+		try {
+			url = new URL(loaded);
+			HttpURLConnection conn;
+				conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			String authtoken = TogglDataAPIHandler.getInstance().getApiToken() + ":api_token";
+			String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(authtoken.getBytes());
+			conn.setRequestProperty("Authorization", basicAuth);
+		    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		    String line;
+		    while ((line = rd.readLine()) != null) {
+		        result.append(line);
+		    }
+		    rd.close();
+		    jsonStr = result.toString();
+		      
+		} catch (ProtocolException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return jsonStr;
+		
 	}
 	
 	@Override
@@ -198,19 +250,15 @@ public class TogglDataAPIHandler extends BaseObject {
 	private String getTokenFromJSON(final String json) {
 
 		JSONObject jsonObject = new JSONObject(json);
-		System.out.println(jsonObject.toString());
         JSONObject newJSON = jsonObject.getJSONObject("data");
-        System.out.println(newJSON.toString());
 
 	    String token = newJSON.getString("api_token");
-	    System.out.println(token);
 	    return token;
 	}
 	
 	private String getDataArrayFromJSON(final String json) {
 
 		JSONObject jsonObject = new JSONObject(json);
-		System.out.println(jsonObject.toString());
         JSONArray newJSONArray = jsonObject.getJSONArray("data");
         
 		return newJSONArray.toString();
