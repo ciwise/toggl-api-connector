@@ -1,3 +1,13 @@
+/**
+ * Anypoint Connector
+ *
+ * Copyright (c) CI Wise Inc.  All rights reserved.  http://www.ciwise.com
+ *
+ * The software in this package is published under the terms of the Apache
+ * version 2.0 license, a copy of which has been included with this distribution 
+ * in the LICENSE.md file.
+ */
+
 package org.ciwise.toggl;
 
 import java.io.BufferedReader;
@@ -16,13 +26,15 @@ import org.json.JSONObject;
 
 public class TogglDataAPIHandler extends BaseObject {
 
+	/**
+	 * A unique serial identifier.
+	 */
+	private static final long serialVersionUID = -7879426364851304062L;
+
 	private String apiToken;
 	
 	private static final String AUTH_URL = "https://www.toggl.com/api/v8/me";
-	private static final String GET_DETAIL_REPORT_URL = "https://toggl.com/reports/api/v2/details"; // https://toggl.com/reports/api/v2/details?workspace_id=1498014&project_ids=17654629&user_agent=david@ciwise.com
-	private static final String GET_WEEKLY_REPORT_URL = "https://toggl.com/reports/api/v2/weekly";
-	private static final String GET_SUMMARY_REPORT_URL = "https://toggl.com/reports/api/v2/summary";
-	private static final String TAGS_URL = "https://www.toggl.com/api/v8/tags";
+	private static final String GET_DETAIL_REPORT_URL = "https://toggl.com/reports/api/v2/details"; 
 	
 	/**
 	 * No public default constructor.
@@ -36,7 +48,7 @@ public class TogglDataAPIHandler extends BaseObject {
 	
 	/**
 	 * static get instance method
-	 * @return
+	 * @return the instance
 	 */
 	public static TogglDataAPIHandler getInstance() {
 		if (instance == null) {
@@ -44,20 +56,6 @@ public class TogglDataAPIHandler extends BaseObject {
 		}
 		return instance;
 	}
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		if (getInstance().authenticate("david@ciwise.com:RoS0706DLW#")) {
-			System.out.println(getInstance().getDetailReportDataForProjectNoTags("17654629","david@ciwise.com"));
-			String tmp = getInstance().delimitedTimeEntryIds(getInstance().getDetailReportDataForProjectNoTags("17654629","david@ciwise.com"));
-			System.out.println("Time entry ids: " + tmp);
-			if (getInstance().tagProcessedRecords("david@ciwise.com", "david@ciwise.com:RoS0706DLW#", "17654629")) {
-				System.out.println("Go check Toggl and see if the records were tagged.");
-			}
-		}
-	}
-	
 
 	public boolean authenticate(final String secret) {
 		boolean retVal = false;
@@ -91,18 +89,17 @@ public class TogglDataAPIHandler extends BaseObject {
 		return retVal;
 	}
 
-	public String getDetailReportDataForProjectNoTags(final String projectId, final String user) { // 17654629
+	public String getDetailReportDataForProjectNoTags(final String workspaceId, final String projectId, final String user) { // 17654629
 		String json = null;
 		StringBuilder result = new StringBuilder();
 	      URL url;
-	      String loaded = GET_DETAIL_REPORT_URL + "?workspace_id=1498014&tag_ids=0&project_ids=" + projectId  + "&user_agent=" + user;
+	      String loaded = GET_DETAIL_REPORT_URL + "?workspace_id=" + workspaceId + "&tag_ids=0&project_ids=" + projectId  + "&user_agent=" + user;
 	      
 		try {
 			url = new URL(loaded);
 			HttpURLConnection conn;
 				conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
-		    // b470ef7cfd23ef21c2e30222aad6b937:api_token
 			String authtoken = TogglDataAPIHandler.getInstance().getApiToken() + ":api_token";
 			String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(authtoken.getBytes());
 			conn.setRequestProperty("Authorization", basicAuth);
@@ -113,8 +110,6 @@ public class TogglDataAPIHandler extends BaseObject {
 		      }
 		      rd.close();
 		      json = result.toString();
-		      System.out.println("Project Data Report -> " + json);
-		      System.out.println("Project Data -> " + getDataArrayFromJSON(json));
 		      
 		} catch (ProtocolException e) {
 			e.printStackTrace();
@@ -126,19 +121,12 @@ public class TogglDataAPIHandler extends BaseObject {
 		return getDataArrayFromJSON(json);
 	}
 	
-	public boolean tagProcessedRecords(final String user, final String userpass, final String projectId) { // 1498014 wid
+	public boolean tagProcessedRecords(final String user, final String userpass, final String workspaceId, final String projectId) {
+
 		boolean retVal = false;
-		/*
-		 
-		curl -v -u 1971800d4d82861d8f2c1651fea4d212:api_token \
-	    -H "Content-Type: application/json" \
-	    -d '{"time_entry":{"tags":["billed","productive"], "tag_action": "add"}}' \
-	    -X PUT https://www.toggl.com/api/v8/time_entries/436694100,436694101
-	    
-	    */
-		// process these records e.g. Time entry ids: 396544838,396542215,396541878,396540897,396540567,396517668,396517141,396516962
+		
 		if (getInstance().authenticate(userpass)) {
-			String jsonData = getInstance().getDetailReportDataForProjectNoTags(projectId,user);
+			String jsonData = getInstance().getDetailReportDataForProjectNoTags(workspaceId,projectId,user);
 			String ids = getInstance().delimitedTimeEntryIds(jsonData);
 			System.out.println("Time entry ids: " + ids);
 			
@@ -152,7 +140,6 @@ public class TogglDataAPIHandler extends BaseObject {
 				conn.setDoOutput(true);
 				conn.setRequestProperty("Content-Type", "application/json");
 				conn.setRequestProperty("Accept", "application/json");
-			    // b470ef7cfd23ef21c2e30222aad6b937:api_token
 				String authtoken = TogglDataAPIHandler.getInstance().getApiToken() + ":api_token";
 				String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(authtoken.getBytes());
 				conn.setRequestProperty("Authorization", basicAuth);
@@ -167,13 +154,10 @@ public class TogglDataAPIHandler extends BaseObject {
 				}
 
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	        
 		}
 
 		return retVal;
