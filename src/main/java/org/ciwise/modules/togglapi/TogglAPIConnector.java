@@ -57,7 +57,7 @@ public class TogglAPIConnector {
      * @param projectId a string integer key for project identification
      * @return JSON Array of time data
      */
-    @Processor(friendlyName="Tag Unprocessed Time Records")
+    @Processor(friendlyName="Tag Unprocessed Time Records by Project")
     public String addProcessTags(final String user, final String userPass, final String workspaceId, final String projectId) {
     	String msg = null;
 
