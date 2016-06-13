@@ -30,7 +30,7 @@ A relationship with MuleSoft is pending and you can only build and install local
 have been tested thoroughly and deemed acceptable for public-use.
 
 Upon the release of v1.0.0 and later, you will be able to download the connector from the update site in Anypoint Studio. Open Anypoint 
-Studio, go to Help → Install New Software and select Anypoint Connectors Update Site where you’ll find all avaliable connectors.
+Studio, go to Help → Install New Software and select Anypoint Connectors Update Site where you’ll find all available connectors.
 
 #Usage
 Usage documentation can be found here: https://github.com/ciwise/toggl-api-connector/wiki
