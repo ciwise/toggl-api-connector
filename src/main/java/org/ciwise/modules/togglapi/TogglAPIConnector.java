@@ -15,6 +15,7 @@ import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Processor;
 import org.ciwise.modules.togglapi.config.ConnectorConfig;
 import org.ciwise.toggl.TogglDataAPIHandler;
+import org.ciwse.common.mule.HttpProcessMessage;
 
 /**
  * 
@@ -59,18 +60,27 @@ public class TogglAPIConnector {
      */
     @Processor(friendlyName="Tag Unprocessed Time Records by Project")
     public String addProcessTags(final String user, final String userPass, final String workspaceId, final String projectId) {
-    	String msg = null;
-
+    	long startTime = System.nanoTime();
+    	HttpProcessMessage msgObj = new HttpProcessMessage();
+    	msgObj.setProcessName("Tag Unprocessed Time Records by Project");
+    	
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
         	if (TogglDataAPIHandler.getInstance().tagProcessedRecords(user, userPass, workspaceId, projectId)) {
-        		msg = config.getSuccessPrefix() + " Process tagging is complete.";
+        		msgObj.setStatus("SUCCESS: process flow successful!");
         	} else {
-        		msg = config.getErrorPrefix() + " Process tagging failed.";
+        		msgObj.setStatus("ERROR: tagging failed!");
         	}
     	} else {
-    		msg = config.getErrorPrefix() + " Authentication failure.";
+    		msgObj.setStatus("ERROR: authentication failure!");
     	}
-    	return msg;
+
+    	long endTime = System.nanoTime();
+    	long duration = (endTime - startTime); //divide by 1000000 to get milliseconds.
+    	String runtime = Long.toString(duration/1000000); // runtime in milliseconds.
+
+    	msgObj.setRuntime(runtime);
+    	
+    	return msgObj.getJSONMessage(msgObj);
     }
     
     public ConnectorConfig getConfig() {
