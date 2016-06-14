@@ -1,7 +1,7 @@
 # TogglAPI Release Notes
 
 ## Date: 
-06-Jun-2016
+14-Jun-2016
 
 ## Version: 
 v0.2.0-alpha "Waffles Release"
@@ -22,9 +22,9 @@ alpha release has not been tested thoroughly and is not recommended for producti
 - Workspace id is calculated from authenticated user
    
 ## Closed Issues in this release
-https://github.com/ciwise/toggl-api-connector/issues/9
-https://github.com/ciwise/toggl-api-connector/issues/10
-https://github.com/ciwise/toggl-api-connector/issues/11
+- https://github.com/ciwise/toggl-api-connector/issues/9
+- https://github.com/ciwise/toggl-api-connector/issues/10
+- https://github.com/ciwise/toggl-api-connector/issues/11
 
 ## Known Issues in this release
 Configuration of the user and userpass is redundant.
