@@ -39,13 +39,13 @@ public class TogglAPIConnector {
      * @return JSON Array of time data
      */
     @Processor(friendlyName="Unprocessed Detail Report Data by Project")
-    public String getUnprocessedProjectTimeData(final String user, final String userPass, final String workspaceId, final String projectName) {
+    public String getUnprocessedProjectTimeData(final String user, final String userPass, final String projectName) {
     	
     	String json = null;
     	
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
-    		String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName, workspaceId);
-    		json = TogglDataAPIHandler.getInstance().getDetailReportDataForProjectNoTags(workspaceId, projectId, user); // 17654629
+    		String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName);
+    		json = TogglDataAPIHandler.getInstance().getDetailReportDataForProjectNoTags(projectId, user); // 17654629
     	}
     	
     	return json;
@@ -61,15 +61,15 @@ public class TogglAPIConnector {
      * @return JSON Array of time data
      */
     @Processor(friendlyName="Tag Unprocessed Time Records by Project")
-    public String addProcessTags(final String user, final String userPass, final String workspaceId, final String projectName) {
+    public String addProcessTags(final String user, final String userPass, final String projectName) {
     	long startTime = System.nanoTime();
     	HttpProcessMessage msgObj = new HttpProcessMessage();
     	msgObj.setProcessName("Tag Unprocessed Time Records by Project");
     	
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
-        	String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName, workspaceId);
+        	String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName);
 
-    		if (TogglDataAPIHandler.getInstance().tagProcessedRecords(user, userPass, workspaceId, projectId)) {
+    		if (TogglDataAPIHandler.getInstance().tagProcessedRecords(user, projectId)) {
         		msgObj.setStatus("SUCCESS: process flow successful!");
         	} else {
         		msgObj.setStatus("ERROR: tagging failed!");
