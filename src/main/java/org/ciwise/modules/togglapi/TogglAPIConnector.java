@@ -10,6 +10,8 @@
 
 package org.ciwise.modules.togglapi;
 
+import java.util.StringTokenizer;
+
 import org.mule.api.annotations.Config;
 import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Processor;
@@ -33,20 +35,19 @@ public class TogglAPIConnector {
      * This method returns a JSON array of timekeeping data that has not been written
      * to the database or tagged as processed.
      *  
-     * @param user the toggl user
      * @param userPass a user, colon, and password
      * @param workspaceId a string integer key for workspace identification
      * @param projectId a string integer key for project identification
      * @return JSON Array of time data
      */
     @Processor(friendlyName="Unprocessed Detail Report Data by Project")
-    public String getUnprocessedProjectTimeData(final String user, final String userPass, final String projectName) {
+    public String getUnprocessedProjectTimeData(final String userPass, final String projectName) {
     	ProcessTimer.getInstance().startTimer();
     	String json = null;
     	
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
     		String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName);
-    		json = TogglDataAPIHandler.getInstance().getDetailReportDataForProjectNoTags(projectId, user); // 17654629
+    		json = TogglDataAPIHandler.getInstance().getDetailReportDataForProjectNoTags(projectId, getUser(userPass)); // 17654629
     	}
     	
     	return json;
@@ -55,22 +56,21 @@ public class TogglAPIConnector {
     /**
      * This method tags all timekeeping records on Toggl for a project that are not tagged.
      * 
-     * @param user the toggl user
      * @param userPass a user, colon, and password
      * @param workspaceId a string integer key for workspace identification
      * @param projectId a string integer key for project identification
      * @return JSON Array of time data
      */
     @Processor(friendlyName="Tag Unprocessed Time Records by Project")
-    public String addProcessTags(final String user, final String userPass, final String projectName) {
-    	//long startTime = System.nanoTime();
+    public String addProcessTags(final String userPass, final String projectName) {
+
     	HttpProcessMessage msgObj = new HttpProcessMessage();
     	msgObj.setProcessName("Tag Unprocessed Time Records by Project");
     	
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
         	String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName);
 
-    		if (TogglDataAPIHandler.getInstance().tagProcessedRecords(user, projectId)) {
+    		if (TogglDataAPIHandler.getInstance().tagProcessedRecords(getUser(userPass), projectId)) {
         		msgObj.setStatus(config.getSuccessProcessTag());
         	} else {
         		msgObj.setStatus(config.getErrorProcessTag());
@@ -79,13 +79,9 @@ public class TogglAPIConnector {
     		msgObj.setStatus(config.getErrorAuthenticate());
     	}
 
-    	//long endTime = System.nanoTime();
-    	//long duration = (endTime - startTime); //divide by 1000000 to get milliseconds.
-    	//String runtime = Long.toString(duration/1000000); // runtime in milliseconds.
     	ProcessTimer.getInstance().stopTimer();
     	
     	msgObj.setRuntime(ProcessTimer.getInstance().getMillisecondTimeDuration());
-    	
     	return msgObj.getJSONMessage(msgObj);
     }
     
@@ -96,5 +92,9 @@ public class TogglAPIConnector {
     public void setConfig(ConnectorConfig config) {
         this.config = config;
     }
-
+    
+    private String getUser(String userpass) {
+    	StringTokenizer toker = new StringTokenizer(userpass, ":");
+    	return toker.nextToken();
+    }
 }
