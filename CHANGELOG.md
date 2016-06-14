@@ -4,7 +4,7 @@
 06-Jun-2016
 
 ## Version: 
-v0.1.0-alpha
+v0.2.0-alpha "Waffles Release"
 
 ## Supports Toggl API versions:  
 v8
@@ -18,19 +18,14 @@ alpha release has not been tested thoroughly and is not recommended for producti
 3.7.2
 
 ## New Features and Functionality
-- Pull JSON time data for a Toggl project
-- Bulk tag time data for a Toggl project
+- Use project name instead of searching for an id
+- Workspace id is calculated from authenticated user
    
 ## Closed Issues in this release
-https://github.com/ciwise/toggl-api-connector/issues/1
-https://github.com/ciwise/toggl-api-connector/issues/2
-https://github.com/ciwise/toggl-api-connector/issues/3
-https://github.com/ciwise/toggl-api-connector/issues/4
-https://github.com/ciwise/toggl-api-connector/issues/5
-https://github.com/ciwise/toggl-api-connector/issues/6
-https://github.com/ciwise/toggl-api-connector/issues/7 
-https://github.com/ciwise/toggl-api-connector/issues/8
+https://github.com/ciwise/toggl-api-connector/issues/9
+https://github.com/ciwise/toggl-api-connector/issues/10
+https://github.com/ciwise/toggl-api-connector/issues/11
 
 ## Known Issues in this release
-A little mysterious because you need integer ids when you configure the connector. Obtaining these ids
-takes a little investigation of the URLs on the Toggl site.
+Configuration of the user and userpass is redundant.
+
