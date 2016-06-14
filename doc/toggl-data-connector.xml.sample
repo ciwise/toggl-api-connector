@@ -1,3 +1,0 @@
-<!-- BEGIN_INCLUDE(toggl-data:greet) -->
-    <toggl-data:greet config-ref="" friend="#[map-payload:friend]" />
-<!-- END_INCLUDE(toggl-data:greet) -->
