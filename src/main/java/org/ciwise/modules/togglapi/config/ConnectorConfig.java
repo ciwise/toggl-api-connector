@@ -18,48 +18,66 @@ import org.mule.api.annotations.param.Default;
 public class ConnectorConfig {
 
 	/**
-	 * Success prefix
+	 * Tagging successful
 	 */
 	@Configurable
-	@Default("SUCCESS:")
-	private String successPrefix;
+	@Default("SUCCESS: tagging complete!")
+	private String successProcessTag;
 	
 	/**
-	 * Error prefix
+	 * Tagging error
 	 */
 	@Configurable
-	@Default("ERROR:")
-	private String errorPrefix;
+	@Default("ERROR: tagging failed!")
+	private String errorProcessTag;
 	
 	/**
-	 * 
-	 * @return the success prefix
+	 * Authentication error
 	 */
-	public String getSuccessPrefix() {
-		return this.successPrefix;
+	@Configurable
+	@Default("ERROR: authentication failure!")
+	private String errorAuthenticate;
+
+	/**
+	 * @return the successProcessTag
+	 */
+	public String getSuccessProcessTag() {
+		return successProcessTag;
 	}
 
 	/**
-	 * 
-	 * @return the error prefix
+	 * @param successProcessTag the successProcessTag to set
 	 */
-	public String getErrorPrefix() {
-		return this.errorPrefix;
+	public void setSuccessProcessTag(String successProcessTag) {
+		this.successProcessTag = successProcessTag;
 	}
 
 	/**
-	 * @param successPrefix the successPrefix to set
+	 * @return the errorProcessTag
 	 */
-	public void setSuccessPrefix(String successPrefix) {
-		this.successPrefix = successPrefix;
+	public String getErrorProcessTag() {
+		return errorProcessTag;
 	}
 
 	/**
-	 * @param errorPrefix the errorPrefix to set
+	 * @param errorProcessTag the errorProcessTag to set
 	 */
-	public void setErrorPrefix(String errorPrefix) {
-		this.errorPrefix = errorPrefix;
+	public void setErrorProcessTag(String errorProcessTag) {
+		this.errorProcessTag = errorProcessTag;
 	}
-	
+
+	/**
+	 * @return the errorAuthenticate
+	 */
+	public String getErrorAuthenticate() {
+		return errorAuthenticate;
+	}
+
+	/**
+	 * @param errorAuthenticate the errorAuthenticate to set
+	 */
+	public void setErrorAuthenticate(String errorAuthenticate) {
+		this.errorAuthenticate = errorAuthenticate;
+	}
 	
 }

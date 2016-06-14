@@ -16,6 +16,7 @@ import org.mule.api.annotations.Processor;
 import org.ciwise.modules.togglapi.config.ConnectorConfig;
 import org.ciwise.toggl.TogglDataAPIHandler;
 import org.ciwse.common.mule.HttpProcessMessage;
+import org.ciwse.common.mule.ProcessTimer;
 
 /**
  * 
@@ -40,7 +41,7 @@ public class TogglAPIConnector {
      */
     @Processor(friendlyName="Unprocessed Detail Report Data by Project")
     public String getUnprocessedProjectTimeData(final String user, final String userPass, final String projectName) {
-    	
+    	ProcessTimer.getInstance().startTimer();
     	String json = null;
     	
     	if (TogglDataAPIHandler.getInstance().authenticate(userPass)) {
@@ -62,7 +63,7 @@ public class TogglAPIConnector {
      */
     @Processor(friendlyName="Tag Unprocessed Time Records by Project")
     public String addProcessTags(final String user, final String userPass, final String projectName) {
-    	long startTime = System.nanoTime();
+    	//long startTime = System.nanoTime();
     	HttpProcessMessage msgObj = new HttpProcessMessage();
     	msgObj.setProcessName("Tag Unprocessed Time Records by Project");
     	
@@ -70,19 +71,20 @@ public class TogglAPIConnector {
         	String projectId = TogglDataAPIHandler.getInstance().getProjectId(projectName);
 
     		if (TogglDataAPIHandler.getInstance().tagProcessedRecords(user, projectId)) {
-        		msgObj.setStatus("SUCCESS: process flow successful!");
+        		msgObj.setStatus(config.getSuccessProcessTag());
         	} else {
-        		msgObj.setStatus("ERROR: tagging failed!");
+        		msgObj.setStatus(config.getErrorProcessTag());
         	}
     	} else {
-    		msgObj.setStatus("ERROR: authentication failure!");
+    		msgObj.setStatus(config.getErrorAuthenticate());
     	}
 
-    	long endTime = System.nanoTime();
-    	long duration = (endTime - startTime); //divide by 1000000 to get milliseconds.
-    	String runtime = Long.toString(duration/1000000); // runtime in milliseconds.
-
-    	msgObj.setRuntime(runtime);
+    	//long endTime = System.nanoTime();
+    	//long duration = (endTime - startTime); //divide by 1000000 to get milliseconds.
+    	//String runtime = Long.toString(duration/1000000); // runtime in milliseconds.
+    	ProcessTimer.getInstance().stopTimer();
+    	
+    	msgObj.setRuntime(ProcessTimer.getInstance().getMillisecondTimeDuration());
     	
     	return msgObj.getJSONMessage(msgObj);
     }
